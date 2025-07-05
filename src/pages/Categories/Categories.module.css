@@ -1,0 +1,160 @@
+/* src/pages/Categories/Categories.module.css */
+.categories-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.categories-container h2 {
+    color: #2260FF;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.error-message {
+    color: #e74c3c;
+    background-color: #fdeded;
+    border: 1px solid #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.add-category-section, .categories-list {
+    margin-bottom: 30px;
+    border: 1px solid #e3f2fd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fbfdff;
+}
+
+.add-category-section h3, .categories-list h3 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.add-category-form {
+    display: flex;
+    gap: 10px;
+}
+
+.add-category-form input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.add-category-form button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.add-category-form button:hover {
+    background-color: #218838;
+}
+
+.categories-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    border: 1px solid #e3f2fd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.category-item span {
+    font-size: 18px;
+    color: #2260FF;
+    font-weight: bold;
+}
+
+.category-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.category-item button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.edit-category-form {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.edit-category-form input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.edit-category-form button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-category-form button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.edit-category-form button[type="button"] { /* Отмена */
+    background-color: #6c757d;
+    color: white;
+}
+
+.loading {
+    text-align: center;
+    font-size: 20px;
+    color: #555;
+    padding: 50px;
+}

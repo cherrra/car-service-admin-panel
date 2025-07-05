@@ -1,7 +1,7 @@
 // src/pages/Users/Users.js
 import React, { useState, useEffect } from 'react';
 import * as api from '../../api/apiService';
-import './Users.module.css'; // Создайте этот файл для стилей
+import styles from './Users.module.css';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -27,11 +27,10 @@ const Users = () => {
     };
 
     const handleDeleteUser = async (userId) => {
-        setError('');
         if (window.confirm('Вы уверены, что хотите удалить этого пользователя?')) {
             try {
                 await api.deleteUser(userId);
-                fetchUsers(); // Обновляем список пользователей
+                fetchUsers();
             } catch (err) {
                 console.error('Ошибка при удалении пользователя:', err);
                 setError('Не удалось удалить пользователя.');
@@ -40,47 +39,54 @@ const Users = () => {
     };
 
     if (loading) {
-        return <div className="loading">Загрузка пользователей...</div>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p>Загрузка пользователей...</p>
+            </div>
+        );
     }
 
     return (
-        <div className="users-container">
-            <h2>Управление пользователями</h2>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h2>Управление пользователями</h2>
+                <p>Список всех зарегистрированных пользователей</p>
+            </div>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <div className={styles.errorAlert}>{error}</div>}
 
-            <div className="users-list">
-                <h3>Список пользователей</h3>
+            <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                    <h3 className={styles.cardTitle}>Список пользователей</h3>
+                    <span className={styles.badge}>{users.length} пользователей</span>
+                </div>
+
                 {users.length === 0 ? (
-                    <p>Пользователи не найдены.</p>
+                    <div className={styles.emptyState}>
+                        <i className="fas fa-users"></i>
+                        <p>Пользователи не найдены</p>
+                    </div>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Имя пользователя</th>
-                                <th>Email</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user) => (
-                                <tr key={user.id}>
-                                    <td>{user.id}</td>
-                                    <td>{user.username}</td>
-                                    <td>{user.email}</td>
-                                    <td>
-                                        <button
-                                            className="delete-button"
-                                            onClick={() => handleDeleteUser(user.id)}
-                                        >
-                                            Удалить
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className={styles.usersList}>
+                        {users.map((user) => (
+                            <div key={user.id} className={styles.userCard}>
+                                <div className={styles.userAvatar}>
+                                    <i className="fas fa-user-circle"></i>
+                                </div>
+                                <div className={styles.userInfo}>
+                                    <h4 className={styles.userName}>{user.username}</h4>
+                                    <p className={styles.userEmail}>{user.email}</p>
+                                </div>
+                                <button
+                                    className={styles.deleteButton}
+                                    onClick={() => handleDeleteUser(user.id)}
+                                >
+                                    <i className="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

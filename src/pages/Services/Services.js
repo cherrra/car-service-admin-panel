@@ -2,21 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as api from '../../api/apiService';
-import './Services.module.css'; // Создайте этот файл для стилей
+import styles from './Services.module.css';
 
 const Services = () => {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
-    const categoryId = queryParams.get('id_category'); // Получаем categoryId из URL
+    const categoryId = queryParams.get('id_category');
 
     const [services, setServices] = useState([]);
     const [newService, setNewService] = useState({
         serviceName: '',
         description: '',
         price: '',
-        id_category: categoryId || '', // Устанавливаем id_category, если есть
+        id_category: categoryId || '',
     });
-    const [editingService, setEditingService] = useState(null); // { id, name, desc, price }
+    const [editingService, setEditingService] = useState(null);
     const [editServiceData, setEditServiceData] = useState({
         serviceName: '',
         description: '',
@@ -48,11 +48,6 @@ const Services = () => {
         }
     };
 
-    const handleNewServiceChange = (e) => {
-        const { name, value } = e.target;
-        setNewService((prev) => ({ ...prev, [name]: value }));
-    };
-
     const handleAddService = async (e) => {
         e.preventDefault();
         setError('');
@@ -60,19 +55,14 @@ const Services = () => {
             setError('Все поля услуги должны быть заполнены.');
             return;
         }
-        if (!categoryId) {
-            setError('Невозможно добавить услугу без ID категории.');
-            return;
-        }
         try {
-            const serviceDataToSend = {
+            await api.addService({
                 ...newService,
-                price: parseFloat(newService.price), // Преобразование цены в число
-                id_category: parseInt(categoryId), // Убедитесь, что ID категории - число
-            };
-            await api.addService(serviceDataToSend);
+                price: parseFloat(newService.price),
+                id_category: parseInt(categoryId),
+            });
             setNewService({ serviceName: '', description: '', price: '', id_category: categoryId });
-            fetchServices(categoryId); // Обновляем список услуг
+            fetchServices(categoryId);
         } catch (err) {
             console.error('Ошибка при добавлении услуги:', err);
             setError('Не удалось добавить услугу.');
@@ -88,11 +78,6 @@ const Services = () => {
         });
     };
 
-    const handleEditServiceChange = (e) => {
-        const { name, value } = e.target;
-        setEditServiceData((prev) => ({ ...prev, [name]: value }));
-    };
-
     const handleUpdateService = async (e) => {
         e.preventDefault();
         setError('');
@@ -100,18 +85,14 @@ const Services = () => {
             setError('Все поля услуги должны быть заполнены.');
             return;
         }
-        if (!editingService) return;
-
         try {
-            const serviceDataToSend = {
+            await api.updateService(editingService.id, {
                 ...editServiceData,
                 price: parseFloat(editServiceData.price),
-                id_category: parseInt(categoryId), // Убедитесь, что ID категории - число
-            };
-            await api.updateService(editingService.id, serviceDataToSend);
+                id_category: parseInt(categoryId),
+            });
             setEditingService(null);
-            setEditServiceData({ serviceName: '', description: '', price: '' });
-            fetchServices(categoryId); // Обновляем список услуг
+            fetchServices(categoryId);
         } catch (err) {
             console.error('Ошибка при обновлении услуги:', err);
             setError('Не удалось обновить услугу.');
@@ -119,11 +100,10 @@ const Services = () => {
     };
 
     const handleDeleteService = async (serviceId) => {
-        setError('');
         if (window.confirm('Вы уверены, что хотите удалить эту услугу?')) {
             try {
                 await api.deleteService(serviceId);
-                fetchServices(categoryId); // Обновляем список услуг
+                fetchServices(categoryId);
             } catch (err) {
                 console.error('Ошибка при удалении услуги:', err);
                 setError('Не удалось удалить услугу.');
@@ -132,112 +112,159 @@ const Services = () => {
     };
 
     if (!categoryId) {
-        return <div className="info-message">Выберите категорию для просмотра услуг.</div>;
+        return (
+            <div className={styles.infoMessage}>
+                <i className="fas fa-folder-open"></i>
+                <p>Выберите категорию для просмотра услуг</p>
+            </div>
+        );
     }
 
     if (loading) {
-        return <div className="loading">Загрузка услуг...</div>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p>Загрузка услуг...</p>
+            </div>
+        );
     }
 
     return (
-        <div className="services-container">
-            <h2>Услуги для категории ID: {categoryId}</h2>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h2>Управление услугами</h2>
+                <p>Категория ID: {categoryId}</p>
+            </div>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <div className={styles.errorAlert}>{error}</div>}
 
-            <div className="add-service-section">
-                <h3>Добавить новую услугу</h3>
-                <form onSubmit={handleAddService} className="add-service-form">
-                    <input
-                        type="text"
-                        name="serviceName"
-                        placeholder="Название услуги"
-                        value={newService.serviceName}
-                        onChange={handleNewServiceChange}
-                        required
-                    />
-                    <textarea
-                        name="description"
-                        placeholder="Описание услуги"
-                        value={newService.description}
-                        onChange={handleNewServiceChange}
-                        required
-                    ></textarea>
-                    <input
-                        type="number"
-                        name="price"
-                        placeholder="Цена"
-                        value={newService.price}
-                        onChange={handleNewServiceChange}
-                        step="0.01"
-                        required
-                    />
-                    <button type="submit">Добавить услугу</button>
+            <div className={styles.card}>
+                <h3 className={styles.cardTitle}>Добавить новую услугу</h3>
+                <form onSubmit={handleAddService} className={styles.addForm}>
+                    <div className={styles.formGroup}>
+                        <label>Название услуги</label>
+                        <input
+                            type="text"
+                            value={newService.serviceName}
+                            onChange={(e) => setNewService({...newService, serviceName: e.target.value})}
+                            placeholder="Введите название"
+                            required
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>Описание</label>
+                        <textarea
+                            value={newService.description}
+                            onChange={(e) => setNewService({...newService, description: e.target.value})}
+                            placeholder="Введите описание"
+                            required
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label>Цена (₽)</label>
+                        <input
+                            type="number"
+                            value={newService.price}
+                            onChange={(e) => setNewService({...newService, price: e.target.value})}
+                            placeholder="Введите цену"
+                            step="0.01"
+                            required
+                        />
+                    </div>
+                    <button type="submit" className={styles.addButton}>
+                        <i className="fas fa-plus"></i> Добавить услугу
+                    </button>
                 </form>
             </div>
 
-            <div className="services-list">
-                <h3>Существующие услуги</h3>
+            <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                    <h3 className={styles.cardTitle}>Список услуг</h3>
+                    <span className={styles.badge}>{services.length} услуг</span>
+                </div>
+
                 {services.length === 0 ? (
-                    <p>Услуги для этой категории не найдены.</p>
+                    <div className={styles.emptyState}>
+                        <i className="fas fa-folder-open"></i>
+                        <p>Услуги не найдены</p>
+                    </div>
                 ) : (
-                    <ul>
+                    <div className={styles.servicesGrid}>
                         {services.map((service) => (
-                            <li key={service.id} className="service-item">
-                                {editingService && editingService.id === service.id ? (
-                                    <form onSubmit={handleUpdateService} className="edit-service-form">
-                                        <input
-                                            type="text"
-                                            name="serviceName"
-                                            value={editServiceData.serviceName}
-                                            onChange={handleEditServiceChange}
-                                            required
-                                        />
-                                        <textarea
-                                            name="description"
-                                            value={editServiceData.description}
-                                            onChange={handleEditServiceChange}
-                                            required
-                                        ></textarea>
-                                        <input
-                                            type="number"
-                                            name="price"
-                                            value={editServiceData.price}
-                                            onChange={handleEditServiceChange}
-                                            step="0.01"
-                                            required
-                                        />
-                                        <button type="submit">Сохранить</button>
-                                        <button type="button" onClick={() => setEditingService(null)}>
-                                            Отмена
-                                        </button>
+                            <div key={service.id} className={styles.serviceCard}>
+                                {editingService?.id === service.id ? (
+                                    <form onSubmit={handleUpdateService} className={styles.editForm}>
+                                        <div className={styles.formGroup}>
+                                            <label>Название</label>
+                                            <input
+                                                type="text"
+                                                value={editServiceData.serviceName}
+                                                onChange={(e) => setEditServiceData({...editServiceData, serviceName: e.target.value})}
+                                                required
+                                            />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label>Описание</label>
+                                            <textarea
+                                                value={editServiceData.description}
+                                                onChange={(e) => setEditServiceData({...editServiceData, description: e.target.value})}
+                                                required
+                                            />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label>Цена (₽)</label>
+                                            <input
+                                                type="number"
+                                                value={editServiceData.price}
+                                                onChange={(e) => setEditServiceData({...editServiceData, price: e.target.value})}
+                                                step="0.01"
+                                                required
+                                            />
+                                        </div>
+                                        <div className={styles.editActions}>
+                                            <button type="submit" className={styles.saveButton}>
+                                                <i className="fas fa-check"></i> Сохранить
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className={styles.cancelButton}
+                                                onClick={() => setEditingService(null)}
+                                            >
+                                                <i className="fas fa-times"></i> Отмена
+                                            </button>
+                                        </div>
                                     </form>
                                 ) : (
                                     <>
-                                        <div>
-                                            <h4>{service.serviceName}</h4>
-                                            <p>{service.description}</p>
-                                            <p>Цена: {service.price} PLN</p>
+                                        <div className={styles.serviceContent}>
+                                            <div className={styles.serviceIcon}>
+                                                <i className="fas fa-tools"></i>
+                                            </div>
+                                            <div>
+                                                <h4 className={styles.serviceName}>{service.serviceName}</h4>
+                                                <p className={styles.serviceDescription}>{service.description}</p>
+                                                <div className={styles.servicePrice}>{service.price} ₽</div>
+                                            </div>
                                         </div>
-                                        <div className="service-actions">
+                                        <div className={styles.serviceActions}>
                                             <button
-                                                className="edit-button"
+                                                className={styles.editButton}
                                                 onClick={() => handleEditService(service)}
                                             >
-                                                Изменить
+                                                <i className="fas fa-edit"></i>
                                             </button>
                                             <button
-                                                className="delete-button"
+                                                className={styles.deleteButton}
                                                 onClick={() => handleDeleteService(service.id)}
                                             >
-                                                Удалить
+                                                <i className="fas fa-trash"></i>
                                             </button>
                                         </div>
                                     </>
                                 )}
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
         </div>

@@ -1,160 +1,285 @@
 /* src/pages/Categories/Categories.module.css */
-.categories-container {
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.categories-container h2 {
-    color: #2260FF;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-.error-message {
-    color: #e74c3c;
-    background-color: #fdeded;
-    border: 1px solid #e74c3c;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.add-category-section, .categories-list {
+.header {
     margin-bottom: 30px;
-    border: 1px solid #e3f2fd;
-    padding: 20px;
-    border-radius: 8px;
-    background-color: #fbfdff;
 }
 
-.add-category-section h3, .categories-list h3 {
-    color: #333;
-    margin-top: 0;
-    margin-bottom: 15px;
-    text-align: center;
+.header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 5px;
 }
 
-.add-category-form {
-    display: flex;
-    gap: 10px;
+.header p {
+    color: #64748b;
+    margin: 0;
 }
 
-.add-category-form input[type="text"] {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+.card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 24px;
+    margin-bottom: 24px;
 }
 
-.add-category-form button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.add-category-form button:hover {
-    background-color: #218838;
-}
-
-.categories-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.category-item {
+.cardHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #ffffff;
-    border: 1px solid #e3f2fd;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    margin-bottom: 20px;
 }
 
-.category-item span {
+.cardTitle {
     font-size: 18px;
-    color: #2260FF;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.badge {
+    background-color: #e2e8f0;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.addForm {
+    display: flex;
+    gap: 10px;
+}
+
+.input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.addButton {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.addButton:hover {
+    background-color: #2563eb;
+}
+
+.categoriesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.categoryCard {
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.categoryCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #bfdbfe;
+}
+
+.categoryContent {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.categoryIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #eff6ff;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.categoryName {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+}
+
+.categoryActions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.editButton, .deleteButton {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.editButton {
+    background-color: #e0f2fe;
+    color: #0ea5e9;
+}
+
+.editButton:hover {
+    background-color: #bae6fd;
+}
+
+.deleteButton {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.deleteButton:hover {
+    background-color: #fecaca;
+}
+
+.editForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.saveButton, .cancelButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.saveButton {
+    background-color: #dcfce7;
+    color: #22c55e;
+}
+
+.saveButton:hover {
+    background-color: #bbf7d0;
+}
+
+.cancelButton {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.cancelButton:hover {
+    background-color: #e2e8f0;
+}
+
+.errorAlert {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.errorAlert:before {
+    content: "!";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
     font-weight: bold;
 }
 
-.category-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.category-item button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.edit-button {
-    background-color: #007bff;
-    color: white;
-}
-
-.edit-button:hover {
-    background-color: #0056b3;
-}
-
-.delete-button {
-    background-color: #dc3545;
-    color: white;
-}
-
-.delete-button:hover {
-    background-color: #c82333;
-}
-
-.edit-category-form {
-    display: flex;
-    gap: 10px;
-    flex-grow: 1;
-    align-items: center;
-}
-
-.edit-category-form input {
-    flex-grow: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.edit-category-form button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.edit-category-form button[type="submit"] {
-    background-color: #28a745;
-    color: white;
-}
-
-.edit-category-form button[type="button"] { /* Отмена */
-    background-color: #6c757d;
-    color: white;
-}
-
-.loading {
+.emptyState {
     text-align: center;
-    font-size: 20px;
-    color: #555;
-    padding: 50px;
+    padding: 40px 20px;
+    color: #64748b;
+}
+
+.emptyState i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #cbd5e1;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 15px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

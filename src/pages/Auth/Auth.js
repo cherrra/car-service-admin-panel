@@ -1,68 +1,110 @@
 // src/pages/Auth/Auth.js
 import React, { useState } from 'react';
-import { login } from '../../api/apiService'; // Импортируем функцию login
+import { login } from '../../api/apiService';
 import { setAuthToken } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
-import './Auth.module.css'; // Стили для страницы авторизации
+import styles from './Auth.module.css';
+import logo from '../../assets/logo_main.png';
 
 const Auth = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError(''); // Сбрасываем предыдущие ошибки
+        setError('');
+        setLoading(true);
+        
         try {
-            // Вызываем функцию login из apiService.js
             const response = await login(email, password);
-
-            // ИЗМЕНЕНО: Теперь ожидаем токен по ключу 'accessToken', как возвращает ваш бэкенд
-            const token = response.data.accessToken; 
+            const token = response.data.accessToken;
 
             if (token) {
-                setAuthToken(token); // Токен успешно сохраняется в localStorage
-                navigate('/admin/categories'); // Перенаправляем пользователя на страницу категорий
+                setAuthToken(token);
+                navigate('/admin/categories');
             } else {
-                // Если токен отсутствует в ответе, выводим ошибку
-                setError('Неверный ответ от сервера: токен отсутствует в ответе.');
-                console.error('API response data (для отладки):', response.data); 
+                setError('Неверный ответ от сервера: токен отсутствует');
+                console.error('API response:', response.data);
             }
         } catch (err) {
-            // Обработка ошибок при входе (например, неверные учетные данные)
-            console.error('Ошибка входа:', err.response ? err.response.data : err.message);
-            setError('Неверный адрес электронной почты или пароль. Пожалуйста, попробуйте снова.');
+            console.error('Ошибка входа:', err.response?.data || err.message);
+            setError(err.response?.data?.message || 'Неверный email или пароль');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="auth-container">
-            <form onSubmit={handleLogin} className="auth-form">
-                <h2>Вход для администратора</h2>
-                {error && <p className="error-message">{error}</p>} {/* Отображаем сообщение об ошибке */}
-                <div className="form-group">
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
+         <div className={styles.authContainer}>
+            <div className={styles.authCard}>
+                <div className={styles.authHeader}>
+                    <div className={styles.logo}>
+                        <img src={logo} alt="Automanservice Logo" />
+                    </div>
+                    <h2>Панель управления</h2>
+                    <p>Введите ваши учетные данные для входа</p>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="password">Пароль:</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <button type="submit" className="login-button">Войти</button>
-            </form>
+                
+                {error && (
+                    <div className={styles.errorAlert}>
+                        <i className="fas fa-exclamation-circle"></i>
+                        <span>{error}</span>
+                    </div>
+                )}
+
+                <form onSubmit={handleLogin} className={styles.authForm}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="email">Email</label>
+                        <div className={styles.inputWrapper}>
+                            <i className="fas fa-envelope"></i>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Введите ваш email"
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                        <label htmlFor="password">Пароль</label>
+                        <div className={styles.inputWrapper}>
+                            <i className="fas fa-lock"></i>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Введите ваш пароль"
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        className={styles.loginButton}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <>
+                                <i className="fas fa-spinner fa-spin"></i>
+                                <span>Вход...</span>
+                            </>
+                        ) : (
+                            <>
+                                <i className="fas fa-sign-in-alt"></i>
+                                <span>Войти</span>
+                            </>
+                        )}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

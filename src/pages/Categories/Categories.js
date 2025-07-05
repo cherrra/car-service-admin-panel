@@ -1,8 +1,8 @@
 // src/pages/Categories/Categories.js
 import React, { useState, useEffect } from 'react';
 import * as api from '../../api/apiService';
-import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
-import './Categories.module.css';
+import { useNavigate } from 'react-router-dom';
+import styles from './Categories.module.css';
 
 const Categories = () => {
     const [categories, setCategories] = useState([]);
@@ -12,10 +12,9 @@ const Categories = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate(); // Инициализируем хук навигации
+    const navigate = useNavigate();
 
     useEffect(() => {
-        console.log('Categories компонент смонтирован. Запускаю fetchCategories...');
         fetchCategories();
     }, []);
 
@@ -23,21 +22,13 @@ const Categories = () => {
         setLoading(true);
         setError('');
         try {
-            console.log('Начинаю запрос к API для получения категорий...');
             const response = await api.getCategories();
-            console.log('Ответ API для категорий:', response.data); 
             setCategories(response.data);
         } catch (err) {
-            console.error('Ошибка при получении категорий (полный объект ошибки):', err);
-            console.error('Сообщение об ошибке:', err.message);
-            if (err.response) {
-                console.error('Статус ответа API:', err.response.status);
-                console.error('Данные ответа API:', err.response.data);
-            }
-            setError('Не удалось загрузить категории. Проверьте консоль для деталей.');
+            console.error('Ошибка при получении категорий:', err);
+            setError('Не удалось загрузить категории. Пожалуйста, попробуйте позже.');
         } finally {
             setLoading(false);
-            console.log('Завершение fetchCategories.');
         }
     };
 
@@ -45,144 +36,166 @@ const Categories = () => {
         e.preventDefault();
         setError('');
         if (!newCategoryName.trim()) {
-            setError('Название категории не может быть пустым.');
+            setError('Название категории не может быть пустым');
             return;
         }
         try {
-            console.log('Попытка добавить категорию:', newCategoryName);
-            await api.createCategory(newCategoryName); 
+            await api.createCategory(newCategoryName);
             setNewCategoryName('');
             fetchCategories();
-            console.log('Категория успешно добавлена.');
         } catch (err) {
-            console.error('Ошибка при добавлении категории (полный объект ошибки):', err);
-            setError('Не удалось добавить категорию. Проверьте консоль для деталей.');
+            console.error('Ошибка при добавлении категории:', err);
+            setError('Не удалось добавить категорию. Пожалуйста, попробуйте позже.');
         }
     };
 
-    const handleEditCategory = (category) => {
+    const handleEditCategory = (category, e) => {
+        e.stopPropagation();
         setEditingCategory(category);
-        setEditCategoryName(category.category_name || ''); 
-        console.log('Редактирование категории:', category);
+        setEditCategoryName(category.category_name || '');
     };
 
     const handleUpdateCategory = async (e) => {
         e.preventDefault();
         setError('');
         if (!editCategoryName.trim()) {
-            setError('Название категории не может быть пустым.');
+            setError('Название категории не может быть пустым');
             return;
         }
         if (!editingCategory) return;
 
         try {
-            console.log('Попытка обновить категорию:', editingCategory.id_category, editCategoryName);
             await api.updateCategory(editingCategory.id_category, editCategoryName);
             setEditingCategory(null);
             setEditCategoryName('');
             fetchCategories();
-            console.log('Категория успешно обновлена.');
         } catch (err) {
-            console.error('Ошибка при обновлении категории (полный объект ошибки):', err);
-            setError('Не удалось обновить категорию. Проверьте консоль для деталей.');
+            console.error('Ошибка при обновлении категории:', err);
+            setError('Не удалось обновить категорию. Пожалуйста, попробуйте позже.');
         }
     };
 
-    const handleDeleteCategory = async (categoryId) => {
-        setError('');
+    const handleDeleteCategory = async (categoryId, e) => {
+        e.stopPropagation();
         if (window.confirm('Вы уверены, что хотите удалить эту категорию?')) {
             try {
-                console.log('Попытка удалить категорию:', categoryId);
                 await api.deleteCategory(categoryId);
                 fetchCategories();
-                console.log('Категория успешно удалена.');
             } catch (err) {
-                console.error('Ошибка при удалении категории (полный объект ошибки):', err);
-                setError('Не удалось удалить категорию. Проверьте консоль для деталей.');
+                console.error('Ошибка при удалении категории:', err);
+                setError('Не удалось удалить категорию. Пожалуйста, попробуйте позже.');
             }
         }
     };
 
-    // НОВАЯ ФУНКЦИЯ: Обработчик клика по категории для перехода на страницу услуг
     const handleCategoryClick = (categoryId) => {
-        // Переходим на страницу услуг, передавая id_category как параметр запроса
         navigate(`/admin/services?id_category=${categoryId}`);
     };
 
     if (loading) {
-        return <div className="loading">Загрузка категорий...</div>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p>Загрузка категорий...</p>
+            </div>
+        );
     }
 
     return (
-        <div className="categories-container">
-            <h2>Управление категориями</h2>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h2>Управление категориями</h2>
+                <p>Создавайте и управляйте категориями ваших услуг</p>
+            </div>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <div className={styles.errorAlert}>{error}</div>}
 
-            <div className="add-category-section">
-                <h3>Добавить новую категорию</h3>
-                <form onSubmit={handleAddCategory} className="add-category-form">
+            <div className={styles.card}>
+                <h3 className={styles.cardTitle}>Добавить новую категорию</h3>
+                <form onSubmit={handleAddCategory} className={styles.addForm}>
                     <input
                         type="text"
-                        placeholder="Название категории"
+                        placeholder="Введите название категории"
                         value={newCategoryName}
                         onChange={(e) => setNewCategoryName(e.target.value)}
+                        className={styles.input}
                         required
                     />
-                    <button type="submit">Добавить категорию</button>
+                    <button type="submit" className={styles.addButton}>
+                        <i className="fas fa-plus"></i> Добавить
+                    </button>
                 </form>
             </div>
 
-            <div className="categories-list">
-                <h3>Существующие категории</h3>
+            <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                    <h3 className={styles.cardTitle}>Список категорий</h3>
+                    <span className={styles.badge}>{categories.length} категорий</span>
+                </div>
+
                 {categories.length === 0 ? (
-                    <p>Категории не найдены.</p>
+                    <div className={styles.emptyState}>
+                        <i className="fas fa-folder-open"></i>
+                        <p>Категории не найдены</p>
+                    </div>
                 ) : (
-                    <ul>
+                    <div className={styles.categoriesGrid}>
                         {categories.map((category) => (
-                            <li 
+                            <div 
                                 key={category.id_category} 
-                                className="category-item"
-                                // ДОБАВЛЕНО: Обработчик клика для всей карточки категории
+                                className={styles.categoryCard}
                                 onClick={() => handleCategoryClick(category.id_category)}
                             >
                                 {editingCategory && editingCategory.id_category === category.id_category ? (
-                                    <form onSubmit={handleUpdateCategory} className="edit-category-form">
+                                    <form onSubmit={handleUpdateCategory} className={styles.editForm}>
                                         <input
                                             type="text"
                                             value={editCategoryName}
                                             onChange={(e) => setEditCategoryName(e.target.value)}
+                                            className={styles.input}
+                                            autoFocus
                                             required
                                         />
-                                        <button type="submit">Сохранить</button>
-                                        <button type="button" onClick={() => setEditingCategory(null)}>
-                                            Отмена
-                                        </button>
+                                        <div className={styles.editActions}>
+                                            <button type="submit" className={styles.saveButton}>
+                                                <i className="fas fa-check"></i>
+                                            </button>
+                                            <button 
+                                                type="button" 
+                                                className={styles.cancelButton}
+                                                onClick={() => setEditingCategory(null)}
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
                                     </form>
                                 ) : (
                                     <>
-                                        <span>{category.category_name}</span> 
-                                        <div className="category-actions">
+                                        <div className={styles.categoryContent}>
+                                            <div className={styles.categoryIcon}>
+                                                <i className="fas fa-folder"></i>
+                                            </div>
+                                            <h4 className={styles.categoryName}>{category.category_name}</h4>
+                                        </div>
+                                        <div className={styles.categoryActions}>
                                             <button
-                                                className="edit-button"
-                                                // ДОБАВЛЕНО: Предотвращаем всплытие события, чтобы не срабатывал клик по li
-                                                onClick={(e) => { e.stopPropagation(); handleEditCategory(category); }}
+                                                className={styles.editButton}
+                                                onClick={(e) => handleEditCategory(category, e)}
                                             >
-                                                Изменить
+                                                <i className="fas fa-edit"></i>
                                             </button>
                                             <button
-                                                className="delete-button"
-                                                // ДОБАВЛЕНО: Предотвращаем всплытие события
-                                                onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id_category); }}
+                                                className={styles.deleteButton}
+                                                onClick={(e) => handleDeleteCategory(category.id_category, e)}
                                             >
-                                                Удалить
+                                                <i className="fas fa-trash"></i>
                                             </button>
                                         </div>
                                     </>
                                 )}
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
         </div>

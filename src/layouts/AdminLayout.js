@@ -2,7 +2,8 @@
 import React from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { removeAuthToken } from '../utils/auth';
-import './AdminLayout.module.css'; // Создайте этот файл для стилей
+import styles from './AdminLayout.module.css';
+import logo from '../assets/logo.png'; // Импортируем логотип
 
 const AdminLayout = () => {
     const navigate = useNavigate();
@@ -15,36 +16,53 @@ const AdminLayout = () => {
     };
 
     return (
-        <div className="admin-layout">
-            <aside className="sidebar">
-                <div className="sidebar-header">
-                    <h3>Админ-Панель</h3>
+        <div className={styles.adminLayout}>
+            <aside className={styles.sidebar}>
+                <div className={styles.sidebarHeader}>
+                    <img src={logo} alt="Automanservice Logo" className={styles.logo} />
+                    <h3>Automanservice</h3>
                 </div>
-                <nav className="sidebar-nav">
+                <nav className={styles.sidebarNav}>
                     <ul>
                         <li>
-                            <Link to="/admin/categories">Категории</Link>
+                            <Link to="/admin/categories" className={styles.navLink}>
+                                <i className={`${styles.icon} fas fa-list`}></i>
+                                <span>Категории</span>
+                            </Link>
                         </li>
                         <li>
-                            <Link to="/admin/users">Пользователи</Link>
+                            <Link to="/admin/users" className={styles.navLink}>
+                                <i className={`${styles.icon} fas fa-users`}></i>
+                                <span>Пользователи</span>
+                            </Link>
                         </li>
                         <li>
-                            <Link to="/admin/orders">Заказы</Link>
+                            <Link to="/admin/orders" className={styles.navLink}>
+                                <i className={`${styles.icon} fas fa-shopping-cart`}></i>
+                                <span>Заказы</span>
+                            </Link>
                         </li>
                     </ul>
                 </nav>
-                <button onClick={handleLogout} className="logout-button">
-                    Выйти
+                <button onClick={handleLogout} className={styles.logoutButton}>
+                    <i className={`${styles.icon} fas fa-sign-out-alt`}></i>
+                    <span>Выйти</span>
                 </button>
             </aside>
-            <main className="content">
-                <header className="main-header">
-                    <h1>Добро пожаловать в админ-панель!</h1>
-                    {/* Кнопка уведомлений, если нужна */}
-                    <button className="notification-button">Уведомления</button>
+            <main className={styles.content}>
+                <header className={styles.mainHeader}>
+                    <h1>Панель управления Automanservice</h1>
+                    <div className={styles.headerActions}>
+                        <button className={styles.notificationButton}>
+                            <i className="fas fa-bell"></i>
+                        </button>
+                        <div className={styles.userProfile}>
+                            <i className="fas fa-user-circle"></i>
+                        </div>
+                    </div>
                 </header>
-                <div className="page-content">
-                    <Outlet /> {/* Здесь будут отображаться дочерние маршруты */}
+                <div className={styles.pageContent}>
+                    <Outlet />
                 </div>
             </main>
         </div>

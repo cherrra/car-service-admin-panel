@@ -1,17 +1,15 @@
 // src/pages/Orders/Orders.js
 import React, { useState, useEffect } from 'react';
 import * as api from '../../api/apiService';
-import './Orders.module.css';
+import styles from './Orders.module.css';
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
-    // Статусы, как они приходят с бэкенда.
-    const orderStatuses = ['created', 'accepted', 'in_progress', 'completed', 'finished', 'canceled']; 
+    const orderStatuses = ['created', 'accepted', 'in_progress', 'completed', 'finished', 'canceled'];
 
     useEffect(() => {
-        console.log('Orders компонент смонтирован. Запускаю fetchOrders...');
         fetchOrders();
     }, []);
 
@@ -19,55 +17,18 @@ const Orders = () => {
         setLoading(true);
         setError('');
         try {
-            console.log('Начинаю запрос к API для получения заказов...');
             const response = await api.getAdminOrders();
-            console.log('Ответ API для заказов:', response.data); 
             setOrders(response.data);
         } catch (err) {
-            console.error('Ошибка при получении заказов (полный объект ошибки):', err);
-            console.error('Сообщение об ошибке:', err.message);
-            if (err.response) {
-                console.error('Статус ответа API:', err.response.status);
-                console.error('Данные ответа API:', err.response.data);
-            }
-            setError('Не удалось загрузить заказы. Проверьте консоль для деталей.');
+            console.error('Ошибка при получении заказов:', err);
+            setError('Не удалось загрузить заказы. Пожалуйста, попробуйте позже.');
         } finally {
             setLoading(false);
-            console.log('Завершение fetchOrders.');
         }
     };
 
-    const handleUpdateOrderStatus = async (orderId, newStatus) => {
-        setError('');
-        try {
-            console.log('Попытка обновить статус заказа:', orderId, newStatus);
-            await api.updateOrderStatus(orderId, newStatus);
-            fetchOrders(); // Обновляем список заказов после успешного обновления
-            console.log('Статус заказа успешно обновлен.');
-        } catch (err) {
-            console.error('Ошибка при обновлении статуса заказа (полный объект ошибки):', err);
-            setError('Не удалось обновить статус заказа. Проверьте консоль для деталей.');
-        }
-    };
-
-    const handleDeleteOrder = async (orderId) => {
-        setError('');
-        if (window.confirm('Вы уверены, что хотите удалить этот заказ?')) {
-            try {
-                console.log('Попытка удалить заказ:', orderId);
-                await api.deleteOrder(orderId);
-                fetchOrders(); // Обновляем список заказов после успешного удаления
-                console.log('Заказ успешно удален.');
-            } catch (err) {
-                console.error('Ошибка при удалении заказа (полный объект ошибки):', err);
-                setError('Не удалось удалить заказ. Проверьте консоль для деталей.');
-            }
-        }
-    };
-
-    // Вспомогательная функция для перевода статусов (как в Android)
     const translateStatus = (status) => {
-        switch (status?.toLowerCase()) { // Используем ?. для безопасного доступа
+        switch (status?.toLowerCase()) {
             case "created": return "Создан";
             case "accepted": return "Принят";
             case "in_progress": return "В процессе";
@@ -78,11 +39,10 @@ const Orders = () => {
         }
     };
 
-    // Вспомогательная функция для форматирования даты (как в Android)
     const formatDate = (rawDate) => {
         if (!rawDate) return "Не указано";
         try {
-            const date = new Date(rawDate); // JavaScript может парсить "YYYY-MM-DD"
+            const date = new Date(rawDate);
             return date.toLocaleDateString('ru-RU', {
                 day: '2-digit',
                 month: '2-digit',
@@ -94,82 +54,122 @@ const Orders = () => {
         }
     };
 
+    const handleUpdateOrderStatus = async (orderId, newStatus) => {
+        setError('');
+        try {
+            await api.updateOrderStatus(orderId, newStatus);
+            fetchOrders();
+        } catch (err) {
+            console.error('Ошибка при обновлении статуса заказа:', err);
+            setError('Не удалось обновить статус заказа.');
+        }
+    };
+
+    const handleDeleteOrder = async (orderId) => {
+        if (window.confirm('Вы уверены, что хотите удалить этот заказ?')) {
+            try {
+                await api.deleteOrder(orderId);
+                fetchOrders();
+            } catch (err) {
+                console.error('Ошибка при удалении заказа:', err);
+                setError('Не удалось удалить заказ.');
+            }
+        }
+    };
+
     if (loading) {
-        return <div className="loading">Загрузка заказов...</div>;
+        return (
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+                <p>Загрузка заказов...</p>
+            </div>
+        );
     }
 
     return (
-        <div className="orders-container">
-            <h2>Управление заказами</h2>
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <h2>Управление заказами</h2>
+                <p>Просмотр и управление всеми заказами клиентов</p>
+            </div>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <div className={styles.errorAlert}>{error}</div>}
 
-            <div className="orders-list">
-                <h3>Список заказов</h3>
+            <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                    <h3 className={styles.cardTitle}>Список заказов</h3>
+                    <span className={styles.badge}>{orders.length} заказов</span>
+                </div>
+
                 {orders.length === 0 ? (
-                    <p>Заказы не найдены.</p>
+                    <div className={styles.emptyState}>
+                        <i className="fas fa-box-open"></i>
+                        <p>Заказы не найдены</p>
+                    </div>
                 ) : (
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Пользователь</th>
-                                <th>Автомобиль</th>
-                                <th>Дата</th>
-                                <th>Статус</th>
-                                <th>Стоимость</th>
-                                <th>Услуги</th>
-                                <th>Комментарий</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.map((order) => (
-                                // ИСПРАВЛЕНО: Используем order.id_order для ключа
-                                <tr key={order.id_order}> 
-                                    {/* ИСПРАВЛЕНО: Используем правильные имена свойств из API */}
-                                    <td>{order.id_order}</td> 
-                                    <td>{order.user_name} ({order.user_email})</td> 
-                                    <td>
-                                        {/* Обработка вложенного объекта 'car' */}
-                                        {order.car && order.car.model && order.car.model.brand && order.car.model.brand.brand_name && order.car.model.model_name
-                                            ? `${order.car.model.brand.brand_name} ${order.car.model.model_name}`
-                                            : "Не указано"}
-                                    </td>
-                                    {/* ИСПРАВЛЕНО: Используем order.order_date и функцию formatDate */}
-                                    <td>{formatDate(order.order_date)}</td> 
-                                    <td>
-                                        <select
-                                            value={order.status}
-                                            // ИСПРАВЛЕНО: Используем order.id_order для обновления статуса
-                                            onChange={(e) => handleUpdateOrderStatus(order.id_order, e.target.value)}
-                                        >
-                                            {orderStatuses.map((status) => (
-                                                <option key={status} value={status}>
-                                                    {translateStatus(status)} {/* ИСПРАВЛЕНО: Переводим статус для отображения */}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </td>
-                                    {/* ИСПРАВЛЕНО: Отображаем total_price */}
-                                    <td>{order.total_price ? `${order.total_price} руб.` : 'N/A'}</td>
-                                    {/* ИСПРАВЛЕНО: Отображаем услуги */}
-                                    <td>{order.services || 'Нет услуг'}</td>
-                                    {/* ИСПРАВЛЕНО: Отображаем комментарий */}
-                                    <td>{order.comment || 'Нет'}</td>
-                                    <td>
-                                        <button
-                                            className="delete-button"
-                                            // ИСПРАВЛЕНО: Используем order.id_order для удаления
-                                            onClick={() => handleDeleteOrder(order.id_order)}
-                                        >
-                                            Удалить
-                                        </button>
-                                    </td>
+                    <div className={styles.tableContainer}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Пользователь</th>
+                                    <th>Автомобиль</th>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                    <th>Стоимость</th>
+                                    <th>Действия</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {orders.map((order) => (
+                                    <tr key={order.id_order}>
+                                        <td>#{order.id_order}</td>
+                                        <td>
+                                            <div className={styles.userCell}>
+                                                <div className={styles.userAvatar}>
+                                                    <i className="fas fa-user"></i>
+                                                </div>
+                                                <div>
+                                                    <div className={styles.userName}>{order.user_name}</div>
+                                                    <div className={styles.userEmail}>{order.user_email}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {order.car && order.car.model && order.car.model.brand && order.car.model.brand.brand_name && order.car.model.model_name
+                                                ? `${order.car.model.brand.brand_name} ${order.car.model.model_name}`
+                                                : "Не указано"}
+                                        </td>
+                                        <td>{formatDate(order.order_date)}</td>
+                                        <td>
+                                            <select
+                                                value={order.status}
+                                                onChange={(e) => handleUpdateOrderStatus(order.id_order, e.target.value)}
+                                                className={styles.statusSelect}
+                                            >
+                                                {orderStatuses.map((status) => (
+                                                    <option key={status} value={status}>
+                                                        {translateStatus(status)}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
+                                        <td className={styles.priceCell}>
+                                            {order.total_price ? `${order.total_price} ₽` : 'N/A'}
+                                        </td>
+                                        <td>
+                                            <button
+                                                className={styles.deleteButton}
+                                                onClick={() => handleDeleteOrder(order.id_order)}
+                                            >
+                                                <i className="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
         </div>

@@ -1,64 +1,153 @@
 /* src/pages/Auth/Auth.module.css */
-.auth-container {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+.authContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f2f5;
-    font-family: Arial, sans-serif;
+    background-color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
 }
 
-.auth-form {
-    background-color: #ffffff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.authCard {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
+    padding: 40px;
+    animation: fadeIn 0.5s ease;
+}
+
+.authHeader {
     text-align: center;
+    margin-bottom: 30px;
 }
 
-.auth-form h2 {
-    margin-bottom: 24px;
-    color: #333;
-}
-
-.form-group {
+.logo {
     margin-bottom: 20px;
-    text-align: left;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
+.logo img {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
 }
 
-.form-group input {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.authHeader h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+}
+
+.authHeader p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+}
+
+.authForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #475569;
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.inputWrapper i {
+    position: absolute;
+    left: 14px;
+    color: #94a3b8;
     font-size: 16px;
 }
 
-.error-message {
-    color: #e74c3c;
-    margin-bottom: 15px;
+.formGroup input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
 }
 
-.login-button {
-    background-color: #2260FF;
+.formGroup input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background-color: white;
+}
+
+.loginButton {
+    background-color: #3b82f6;
     color: white;
-    padding: 12px 20px;
+    padding: 14px;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    margin-top: 10px;
 }
 
-.login-button:hover {
-    background-color: #1a4bc0;
+.loginButton:hover {
+    background-color: #2563eb;
+}
+
+.loginButton:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.errorAlert {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    animation: shake 0.5s ease;
+}
+
+.errorAlert i {
+    font-size: 16px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
 }

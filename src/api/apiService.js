@@ -1,8 +1,6 @@
-// src/api/apiService.js
 import axios from 'axios';
 import { getAuthToken, removeAuthToken } from '../utils/auth'; // Импортируем обе функции
 
-// ИСПРАВЛЕНО: Убрано Markdown-форматирование из URL.
 // Базовый URL вашего API. Убедитесь, что он заканчивается на слэш.
 const BASE_URL = 'https://automser.store/api/';
 
@@ -50,8 +48,6 @@ api.interceptors.response.use(
 
 // --- Endpoints аутентификации ---
 export const login = (email, password) => {
-    // ИСПРАВЛЕНО: Возвращено использование экземпляра 'api' с его baseURL.
-    // Проблема с 404 должна быть решена после исправления BASE_URL.
     return api.post('auth/login', { email, password });
 };
 
@@ -111,11 +107,13 @@ export const getCategories = () => {
 };
 
 export const createCategory = (categoryName) => {
-    return api.post('categories', { categoryName });
+    // ИСПРАВЛЕНО: Изменено имя поля с 'categoryName' на 'category_name'
+    return api.post('categories', { category_name: categoryName });
 };
 
 export const updateCategory = (categoryId, newCategoryName) => {
-    return api.put(`categories/${categoryId}`, { categoryName: newCategoryName });
+    // ИСПРАВЛЕНО: Изменено имя поля с 'categoryName' на 'category_name'
+    return api.put(`categories/${categoryId}`, { category_name: newCategoryName });
 };
 
 export const deleteCategory = (categoryId) => {

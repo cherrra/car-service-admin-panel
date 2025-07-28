@@ -4,7 +4,7 @@ import { login } from '../../api/apiService';
 import { setAuthToken } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
-import logo from '../../assets/logo_main.png';
+import logo from '../../assets/logo_main.png'; // Предполагается, что этот путь верен
 
 const Auth = () => {
     const [email, setEmail] = useState('');
@@ -38,7 +38,7 @@ const Auth = () => {
     };
 
     return (
-         <div className={styles.authContainer}>
+        <div className={styles.authContainer}>
             <div className={styles.authCard}>
                 <div className={styles.authHeader}>
                     <div className={styles.logo}>

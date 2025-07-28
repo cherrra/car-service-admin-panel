@@ -8,6 +8,11 @@ const Users = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
+    // Базовый URL для изображений. Убедитесь, что он соответствует вашему серверу,
+    // где хранятся загруженные изображения.
+    // Если ваш бэкенд работает на http://localhost:5000, используйте 'http://localhost:5000/'
+    const IMAGE_BASE_URL = 'https://automser.store/'; 
+
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -72,7 +77,23 @@ const Users = () => {
                         {users.map((user) => (
                             <div key={user.id} className={styles.userCard}>
                                 <div className={styles.userAvatar}>
-                                    <i className="fas fa-user-circle"></i>
+                                    {/* Условный рендеринг аватара */}
+                                    {user.link_img ? (
+                                        <img
+                                            src={`${IMAGE_BASE_URL}${user.link_img}`}
+                                            alt={user.username}
+                                            className={styles.avatarImage}
+                                            onError={(e) => {
+                                                // В случае ошибки загрузки изображения,
+                                                // заменяем его на стандартную иконку
+                                                e.target.onerror = null; // Предотвращаем бесконечный цикл ошибок
+                                                e.target.style.display = 'none'; // Скрываем сломанное изображение
+                                                e.target.parentNode.querySelector('i').style.display = 'block'; // Показываем иконку
+                                            }}
+                                        />
+                                    ) : null}
+                                    {/* Иконка-заглушка, если нет изображения или оно не загрузилось */}
+                                    <i className="fas fa-user-circle" style={{ display: user.link_img ? 'none' : 'block' }}></i>
                                 </div>
                                 <div className={styles.userInfo}>
                                     <h4 className={styles.userName}>{user.username}</h4>

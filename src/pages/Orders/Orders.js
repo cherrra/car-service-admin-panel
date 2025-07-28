@@ -1,5 +1,5 @@
 // src/pages/Orders/Orders.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as api from '../../api/apiService';
 import styles from './Orders.module.css';
 
@@ -7,6 +7,10 @@ const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const [filterType, setFilterType] = useState('all'); // 'all', 'active', 'archived'
+    const [searchQuery, setSearchQuery] = useState(''); // Для поиска по ID заказа или имени пользователя
+
+    // orderStatuses остается здесь, так как используется в рендеринге select
     const orderStatuses = ['created', 'accepted', 'in_progress', 'completed', 'finished', 'canceled'];
 
     useEffect(() => {
@@ -26,6 +30,34 @@ const Orders = () => {
             setLoading(false);
         }
     };
+
+    // Мемоизированный список заказов после применения фильтров и поиска
+    const filteredOrders = useMemo(() => {
+        // Определяем статусы для активных и завершенных/отмененных заказов внутри useMemo
+        // Это устраняет предупреждение react-hooks/exhaustive-deps
+        const activeStatuses = ['created', 'accepted', 'in_progress'];
+        const archivedStatuses = ['completed', 'finished', 'canceled'];
+
+        let currentOrders = orders;
+
+        // 1. Фильтрация по типу статуса
+        if (filterType === 'active') {
+            currentOrders = currentOrders.filter(order => activeStatuses.includes(order.status));
+        } else if (filterType === 'archived') {
+            currentOrders = currentOrders.filter(order => archivedStatuses.includes(order.status));
+        }
+
+        // 2. Поиск по ID заказа или имени пользователя
+        if (searchQuery) {
+            const lowerCaseQuery = searchQuery.toLowerCase();
+            currentOrders = currentOrders.filter(order =>
+                order.id_order.toString().includes(lowerCaseQuery) || // Поиск по ID заказа
+                (order.user_name && order.user_name.toLowerCase().includes(lowerCaseQuery)) // Поиск по имени пользователя
+            );
+        }
+
+        return currentOrders;
+    }, [orders, filterType, searchQuery]); // Зависимости обновлены
 
     const translateStatus = (status) => {
         switch (status?.toLowerCase()) {
@@ -58,7 +90,7 @@ const Orders = () => {
         setError('');
         try {
             await api.updateOrderStatus(orderId, newStatus);
-            fetchOrders();
+            fetchOrders(); // Перезагружаем заказы после обновления статуса
         } catch (err) {
             console.error('Ошибка при обновлении статуса заказа:', err);
             setError('Не удалось обновить статус заказа.');
@@ -66,10 +98,11 @@ const Orders = () => {
     };
 
     const handleDeleteOrder = async (orderId) => {
+        // ВНИМАНИЕ: window.confirm блокирует UI. В реальном приложении рекомендуется использовать пользовательский модальный диалог.
         if (window.confirm('Вы уверены, что хотите удалить этот заказ?')) {
             try {
                 await api.deleteOrder(orderId);
-                fetchOrders();
+                fetchOrders(); // Перезагружаем заказы после удаления
             } catch (err) {
                 console.error('Ошибка при удалении заказа:', err);
                 setError('Не удалось удалить заказ.');
@@ -98,13 +131,40 @@ const Orders = () => {
             <div className={styles.card}>
                 <div className={styles.cardHeader}>
                     <h3 className={styles.cardTitle}>Список заказов</h3>
-                    <span className={styles.badge}>{orders.length} заказов</span>
+                    <span className={styles.badge}>{filteredOrders.length} заказов</span> {/* Используем filteredOrders.length */}
                 </div>
 
-                {orders.length === 0 ? (
+                <div className={styles.filtersContainer}>
+                    <div className={styles.filterGroup}>
+                        <label htmlFor="statusFilter">Фильтр по статусу:</label>
+                        <select
+                            id="statusFilter"
+                            className={styles.selectFilter}
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                        >
+                            <option value="all">Все заказы</option>
+                            <option value="active">Активные</option>
+                            <option value="archived">Завершенные/Отмененные</option>
+                        </select>
+                    </div>
+                    <div className={styles.filterGroup}>
+                        <label htmlFor="search">Поиск (ID заказа / Имя пользователя):</label>
+                        <input
+                            type="text"
+                            id="search"
+                            className={styles.searchInput}
+                            placeholder="Введите ID или имя пользователя"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {filteredOrders.length === 0 ? (
                     <div className={styles.emptyState}>
                         <i className="fas fa-box-open"></i>
-                        <p>Заказы не найдены</p>
+                        <p>Заказы не найдены, соответствующие вашим критериям.</p>
                     </div>
                 ) : (
                     <div className={styles.tableContainer}>
@@ -121,7 +181,7 @@ const Orders = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orders.map((order) => (
+                                {filteredOrders.map((order) => ( // Используем filteredOrders
                                     <tr key={order.id_order}>
                                         <td>#{order.id_order}</td>
                                         <td>

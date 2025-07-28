@@ -1,69 +1,84 @@
 /* src/pages/Categories/Categories.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
 }
 
 .header {
+    text-align: center;
     margin-bottom: 30px;
+    color: #1e293b;
 }
 
 .header h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 5px;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .header p {
+    font-size: 16px;
     color: #64748b;
-    margin: 0;
+}
+
+.errorAlert {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 800px; /* Ограничиваем ширину для лучшей читаемости */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .card {
     background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.cardHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 800px; /* Увеличена максимальная ширина карточек */
+    box-sizing: border-box;
 }
 
 .cardTitle {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: #1e293b;
-    margin: 0;
-}
-
-.badge {
-    background-color: #e2e8f0;
-    color: #475569;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 15px;
 }
 
 .addForm {
     display: flex;
-    gap: 10px;
+    gap: 15px;
+    flex-wrap: wrap; /* Позволяет элементам переноситься на новую строку на маленьких экранах */
 }
 
 .input {
-    flex: 1;
-    padding: 10px 14px;
+    flex-grow: 1; /* Позволяет полю ввода занимать доступное пространство */
+    padding: 12px 15px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 15px;
+    color: #334155;
     transition: all 0.2s ease;
+    min-width: 200px; /* Минимальная ширина для поля ввода */
 }
 
 .input:focus {
@@ -73,213 +88,207 @@
 }
 
 .addButton {
-    background-color: #3b82f6;
+    background-color: #22c55e;
     color: white;
+    padding: 12px 20px;
     border: none;
     border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .addButton:hover {
-    background-color: #2563eb;
+    background-color: #16a34a;
 }
 
-.categoriesGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 16px;
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 15px;
+}
+
+.badge {
+    background-color: #e0f2fe;
+    color: #0284c7;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Изменения для отображения категорий списком */
+.categoriesList { 
+    display: flex;
+    flex-direction: column; /* Элементы будут располагаться друг под другом */
+    gap: 15px; /* Пространство между карточками категорий */
+    width: 100%; /* Занимает всю доступную ширину родителя */
 }
 
 .categoryCard {
-    background-color: white;
+    background-color: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
+    width: 100%; /* Каждая карточка занимает 100% ширины */
+    box-sizing: border-box; /* Учитывает padding в ширине */
 }
 
 .categoryCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border-color: #bfdbfe;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    background-color: #eff6ff;
 }
 
 .categoryContent {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
+    flex-grow: 1; /* Позволяет контенту занимать доступное пространство */
 }
 
 .categoryIcon {
-    width: 40px;
-    height: 40px;
+    background-color: #bfdbfe;
+    color: #1e40af;
+    padding: 10px;
     border-radius: 8px;
-    background-color: #eff6ff;
-    color: #3b82f6;
+    font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
 }
 
 .categoryName {
     font-size: 16px;
     font-weight: 500;
-    color: #1e293b;
+    color: #334155;
     margin: 0;
-    flex: 1;
 }
 
 .categoryActions {
-    position: absolute;
-    top: 12px;
-    right: 12px;
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
-.editButton, .deleteButton {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.editButton {
+.editButton,
+.deleteButton {
     background-color: #e0f2fe;
-    color: #0ea5e9;
+    color: #0284c7;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .editButton:hover {
-    background-color: #bae6fd;
+    background-color: #93c5fd;
+    color: #1d4ed8;
 }
 
 .deleteButton {
     background-color: #fee2e2;
-    color: #ef4444;
+    color: #dc2626;
 }
 
 .deleteButton:hover {
-    background-color: #fecaca;
+    background-color: #fca5a5;
+    color: #b91c1c;
 }
 
 .editForm {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.editForm .input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    font-size: 15px;
 }
 
 .editActions {
     display: flex;
-    gap: 8px;
-    justify-content: flex-end;
+    gap: 5px;
 }
 
-.saveButton, .cancelButton {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.saveButton,
+.cancelButton {
+    padding: 8px 12px;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
 }
 
 .saveButton {
-    background-color: #dcfce7;
-    color: #22c55e;
+    background-color: #22c55e;
+    color: white;
 }
 
 .saveButton:hover {
-    background-color: #bbf7d0;
+    background-color: #16a34a;
 }
 
 .cancelButton {
-    background-color: #f1f5f9;
+    background-color: #e2e8f0;
     color: #64748b;
 }
 
 .cancelButton:hover {
-    background-color: #e2e8f0;
+    background-color: #cbd5e1;
 }
 
-.errorAlert {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+.loadingContainer {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: #475569;
 }
 
-.errorAlert:before {
-    content: "!";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-color: #ef4444;
-    color: white;
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3b82f6;
     border-radius: 50%;
-    text-align: center;
-    line-height: 20px;
-    font-weight: bold;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .emptyState {
     text-align: center;
     padding: 40px 20px;
     color: #64748b;
-}
-
-.emptyState i {
-    font-size: 40px;
-    margin-bottom: 15px;
-    color: #cbd5e1;
-}
-
-.emptyState p {
-    margin: 0;
     font-size: 16px;
 }
 
-.loadingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 200px;
-    gap: 15px;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #e2e8f0;
-    border-top: 4px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.emptyState i {
+    font-size: 48px;
+    color: #cbd5e1;
+    margin-bottom: 15px;
 }

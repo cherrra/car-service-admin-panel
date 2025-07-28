@@ -40,7 +40,6 @@ input[type="email"],
 input[type="password"],
 input[type="number"],
 textarea {
-    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px; /* Более скругленные углы */
     font-size: 16px;

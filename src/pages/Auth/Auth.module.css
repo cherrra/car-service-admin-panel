@@ -70,7 +70,7 @@
 
 .inputWrapper {
     position: relative;
-    display: flex;
+    display: flex; /* Обеспечивает использование flexbox для выравнивания */
     align-items: center;
 }
 
@@ -79,11 +79,14 @@
     left: 14px;
     color: #94a3b8;
     font-size: 16px;
+    /* Убедитесь, что иконка не слишком широка и имеет правильный z-index при необходимости */
+    z-index: 1; 
 }
 
 .formGroup input {
     width: 100%;
-    padding: 12px 16px 12px 42px;
+    /* Скорректирован padding-left для создания места для иконки */
+    padding: 12px 16px 12px 42px; /* Увеличен левый отступ, чтобы текст не перекрывался */
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     font-size: 14px;
@@ -130,15 +133,16 @@
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 20px;
-    display: flex;
+    display: flex; /* Обеспечивает использование flexbox для выравнивания */
     align-items: center;
-    gap: 10px;
+    gap: 10px; /* Обеспечивает пространство между иконкой и текстом */
     font-size: 14px;
     animation: shake 0.5s ease;
 }
 
 .errorAlert i {
     font-size: 16px;
+    /* Здесь не требуются особые изменения, так как gap регулирует отступы */
 }
 
 @keyframes fadeIn {

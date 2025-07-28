@@ -11,23 +11,25 @@ const Services = () => {
 
     const [services, setServices] = useState([]);
     const [newService, setNewService] = useState({
-        serviceName: '',
-        description: '',
+        service_name: '',
+        service_description: '',
         price: '',
         id_category: categoryId || '',
     });
     const [editingService, setEditingService] = useState(null);
     const [editServiceData, setEditServiceData] = useState({
-        serviceName: '',
-        description: '',
+        service_name: '',
+        service_description: '',
         price: '',
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const [categoryName, setCategoryName] = useState('Загрузка...'); // Новое состояние для названия категории
 
     useEffect(() => {
         if (categoryId) {
             fetchServices(categoryId);
+            fetchCategoryName(categoryId); // Вызываем новую функцию для получения названия категории
         } else {
             setError('ID категории не указан.');
             setLoading(false);
@@ -42,52 +44,72 @@ const Services = () => {
             setServices(response.data);
         } catch (err) {
             console.error('Ошибка при получении услуг:', err);
-            setError('Не удалось загрузить услуги.');
+            setError('Не удалось загрузить услуги. Пожалуйста, попробуйте позже.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Новая функция для получения названия категории
+    const fetchCategoryName = async (id) => {
+        try {
+            const response = await api.getCategories(); // Получаем все категории
+            const foundCategory = response.data.find(cat => cat.id_category === parseInt(id));
+            if (foundCategory) {
+                setCategoryName(foundCategory.category_name);
+            } else {
+                setCategoryName('Неизвестная категория');
+            }
+        } catch (err) {
+            console.error('Ошибка при получении названия категории:', err);
+            setCategoryName('Ошибка загрузки названия категории');
         }
     };
 
     const handleAddService = async (e) => {
         e.preventDefault();
         setError('');
-        if (!newService.serviceName.trim() || !newService.description.trim() || !newService.price.trim()) {
+        if (!newService.service_name.trim() || !newService.service_description.trim() || !newService.price.trim()) {
             setError('Все поля услуги должны быть заполнены.');
             return;
         }
         try {
             await api.addService({
-                ...newService,
+                service_name: newService.service_name,
+                description: newService.service_description,
                 price: parseFloat(newService.price),
                 id_category: parseInt(categoryId),
             });
-            setNewService({ serviceName: '', description: '', price: '', id_category: categoryId });
+            setNewService({ service_name: '', service_description: '', price: '', id_category: categoryId });
             fetchServices(categoryId);
         } catch (err) {
             console.error('Ошибка при добавлении услуги:', err);
-            setError('Не удалось добавить услугу.');
+            setError('Не удалось добавить услугу. Пожалуйста, попробуйте позже.');
         }
     };
 
     const handleEditService = (service) => {
         setEditingService(service);
         setEditServiceData({
-            serviceName: service.serviceName,
-            description: service.description,
-            price: service.price.toString(),
+            service_name: service.service_name || '',
+            service_description: service.description || '',
+            price: service.price ? service.price.toString() : '',
         });
     };
 
     const handleUpdateService = async (e) => {
         e.preventDefault();
         setError('');
-        if (!editServiceData.serviceName.trim() || !editServiceData.description.trim() || !editServiceData.price.trim()) {
+        if (!editServiceData.service_name.trim() || !editServiceData.service_description.trim() || !editServiceData.price.trim()) {
             setError('Все поля услуги должны быть заполнены.');
             return;
         }
+        if (!editingService) return;
+
         try {
-            await api.updateService(editingService.id, {
-                ...editServiceData,
+            await api.updateService(editingService.id_service, {
+                service_name: editServiceData.service_name,
+                description: editServiceData.service_description,
                 price: parseFloat(editServiceData.price),
                 id_category: parseInt(categoryId),
             });
@@ -95,7 +117,7 @@ const Services = () => {
             fetchServices(categoryId);
         } catch (err) {
             console.error('Ошибка при обновлении услуги:', err);
-            setError('Не удалось обновить услугу.');
+            setError('Не удалось обновить услугу. Пожалуйста, попробуйте позже.');
         }
     };
 
@@ -106,7 +128,7 @@ const Services = () => {
                 fetchServices(categoryId);
             } catch (err) {
                 console.error('Ошибка при удалении услуги:', err);
-                setError('Не удалось удалить услугу.');
+                setError('Не удалось удалить услугу. Пожалуйста, попробуйте позже.');
             }
         }
     };
@@ -133,7 +155,8 @@ const Services = () => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2>Управление услугами</h2>
-                <p>Категория ID: {categoryId}</p>
+                {/* ИСПРАВЛЕНО: Отображаем название категории вместо ID */}
+                <p>Категория: {categoryName}</p>
             </div>
 
             {error && <div className={styles.errorAlert}>{error}</div>}
@@ -145,8 +168,8 @@ const Services = () => {
                         <label>Название услуги</label>
                         <input
                             type="text"
-                            value={newService.serviceName}
-                            onChange={(e) => setNewService({...newService, serviceName: e.target.value})}
+                            value={newService.service_name}
+                            onChange={(e) => setNewService({...newService, service_name: e.target.value})}
                             placeholder="Введите название"
                             required
                         />
@@ -154,8 +177,8 @@ const Services = () => {
                     <div className={styles.formGroup}>
                         <label>Описание</label>
                         <textarea
-                            value={newService.description}
-                            onChange={(e) => setNewService({...newService, description: e.target.value})}
+                            value={newService.service_description}
+                            onChange={(e) => setNewService({...newService, service_description: e.target.value})}
                             placeholder="Введите описание"
                             required
                         />
@@ -191,23 +214,23 @@ const Services = () => {
                 ) : (
                     <div className={styles.servicesGrid}>
                         {services.map((service) => (
-                            <div key={service.id} className={styles.serviceCard}>
-                                {editingService?.id === service.id ? (
+                            <div key={service.id_service} className={styles.serviceCard}>
+                                {editingService?.id_service === service.id_service ? (
                                     <form onSubmit={handleUpdateService} className={styles.editForm}>
                                         <div className={styles.formGroup}>
                                             <label>Название</label>
                                             <input
                                                 type="text"
-                                                value={editServiceData.serviceName}
-                                                onChange={(e) => setEditServiceData({...editServiceData, serviceName: e.target.value})}
+                                                value={editServiceData.service_name}
+                                                onChange={(e) => setEditServiceData({...editServiceData, service_name: e.target.value})}
                                                 required
                                             />
                                         </div>
                                         <div className={styles.formGroup}>
                                             <label>Описание</label>
                                             <textarea
-                                                value={editServiceData.description}
-                                                onChange={(e) => setEditServiceData({...editServiceData, description: e.target.value})}
+                                                value={editServiceData.service_description}
+                                                onChange={(e) => setEditServiceData({...editServiceData, service_description: e.target.value})}
                                                 required
                                             />
                                         </div>
@@ -241,9 +264,15 @@ const Services = () => {
                                                 <i className="fas fa-tools"></i>
                                             </div>
                                             <div>
-                                                <h4 className={styles.serviceName}>{service.serviceName}</h4>
-                                                <p className={styles.serviceDescription}>{service.description}</p>
-                                                <div className={styles.servicePrice}>{service.price} ₽</div>
+                                                <h4 className={styles.serviceName}>{service.service_name}</h4>
+                                                {service.description && (
+                                                    <p className={styles.serviceDescription}>{service.description}</p>
+                                                )}
+                                                {service.price !== null && service.price !== undefined ? (
+                                                    <div className={styles.servicePrice}>{service.price} ₽</div>
+                                                ) : (
+                                                    <div className={styles.servicePrice}>Цена не указана</div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className={styles.serviceActions}>
@@ -255,7 +284,7 @@ const Services = () => {
                                             </button>
                                             <button
                                                 className={styles.deleteButton}
-                                                onClick={() => handleDeleteService(service.id)}
+                                                onClick={() => handleDeleteService(service.id_service)}
                                             >
                                                 <i className="fas fa-trash"></i>
                                             </button>

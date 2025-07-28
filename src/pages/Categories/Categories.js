@@ -77,6 +77,7 @@ const Categories = () => {
 
     const handleDeleteCategory = async (categoryId, e) => {
         e.stopPropagation();
+        // Замените window.confirm на пользовательский модальный диалог
         if (window.confirm('Вы уверены, что хотите удалить эту категорию?')) {
             try {
                 await api.deleteCategory(categoryId);
@@ -139,7 +140,7 @@ const Categories = () => {
                         <p>Категории не найдены</p>
                     </div>
                 ) : (
-                    <div className={styles.categoriesGrid}>
+                    <div className={styles.categoriesList}> {/* Изменено с categoriesGrid на categoriesList */}
                         {categories.map((category) => (
                             <div 
                                 key={category.id_category} 

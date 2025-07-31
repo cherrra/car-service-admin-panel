@@ -1,0 +1,208 @@
+/* src/pages/Notifications/NotificationsPage.module.css */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    margin-bottom: 30px;
+}
+
+.header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.header p {
+    color: #64748b;
+    margin: 0;
+}
+
+.actionsBar {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.markAllReadButton {
+    background-color: #e0f2f7; /* Светло-голубой */
+    color: #0288d1; /* Темно-голубой */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.markAllReadButton:hover {
+    background-color: #b3e5fc; /* Более темный голубой при наведении */
+}
+
+.notificationsList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notificationCard {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: background-color 0.2s ease, border-left 0.2s ease;
+    border-left: 5px solid transparent; /* Для индикации статуса */
+}
+
+.notificationCard.unread {
+    border-left-color: #3b82f6; /* Синий для непрочитанных */
+    background-color: #eff6ff; /* Очень светло-синий фон */
+}
+
+.notificationCard.read {
+    border-left-color: #e2e8f0; /* Серый для прочитанных */
+    opacity: 0.8;
+}
+
+.notificationContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+    color: #334155;
+    line-height: 1.4;
+}
+
+.notificationContent i {
+    color: #3b82f6;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.notificationMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.notificationTime {
+    font-weight: 500;
+}
+
+.deleteNotificationButton {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.deleteNotificationButton:hover {
+    color: #ef4444;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-top: 20px;
+}
+
+.emptyState i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #cbd5e1;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* Стили для тоста */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #28a745; /* Зеленый фон */
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    animation: fadeInOut 5s forwards; /* Анимация появления и исчезновения */
+    font-size: 15px;
+}
+
+.toast i {
+    font-size: 20px;
+}
+
+.toastCloseButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Обновленные ключевые кадры для более плавного всплывания из правого нижнего угла */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(20px, 20px); } /* Начинаем немного правее и ниже */
+    10% { opacity: 1; transform: translate(0, 0); } /* Плавно перемещаемся в конечное положение */
+    90% { opacity: 1; transform: translate(0, 0); } /* Остаемся видимыми */
+    100% { opacity: 0; transform: translate(20px, 20px); } /* Плавно исчезаем, возвращаясь немного правее и ниже */
+}
+
+/* Стили для значка уведомлений на кнопке */
+.notificationButton {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    font-size: 24px;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+
+.notificationButton:hover {
+    color: #3b82f6;
+}
+
+.notificationBadge {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: #ef4444; /* Красный цвет */
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    min-width: 18px;
+    text-align: center;
+    border: 1px solid white; /* Небольшая белая обводка */
+}

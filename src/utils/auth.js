@@ -9,4 +9,5 @@ export const getAuthToken = () => {
 
 export const removeAuthToken = () => {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('lastCheckedOrderTimestamp');
 };

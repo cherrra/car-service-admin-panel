@@ -1,5 +1,6 @@
 // src/pages/Users/Users.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
 import * as api from '../../api/apiService';
 import styles from './Users.module.css';
 
@@ -7,10 +8,10 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // Инициализируем useNavigate
 
     // Базовый URL для изображений. Убедитесь, что он соответствует вашему серверу,
     // где хранятся загруженные изображения.
-    // Если ваш бэкенд работает на http://localhost:5000, используйте 'http://localhost:5000/'
     const IMAGE_BASE_URL = 'https://automser.store/'; 
 
     useEffect(() => {
@@ -41,6 +42,11 @@ const Users = () => {
                 setError('Не удалось удалить пользователя.');
             }
         }
+    };
+
+    // Обработчик клика по карточке пользователя
+    const handleUserCardClick = (userId) => {
+        navigate(`/admin/users/${userId}`);
     };
 
     if (loading) {
@@ -75,33 +81,37 @@ const Users = () => {
                 ) : (
                     <div className={styles.usersList}>
                         {users.map((user) => (
-                            <div key={user.id} className={styles.userCard}>
+                            <div 
+                                key={user.id} 
+                                className={styles.userCard}
+                                onClick={() => handleUserCardClick(user.id)} // Добавлен обработчик клика
+                            >
                                 <div className={styles.userAvatar}>
-                                    {/* Условный рендеринг аватара */}
                                     {user.link_img ? (
                                         <img
                                             src={`${IMAGE_BASE_URL}${user.link_img}`}
                                             alt={user.username}
                                             className={styles.avatarImage}
                                             onError={(e) => {
-                                                // В случае ошибки загрузки изображения,
-                                                // заменяем его на стандартную иконку
-                                                e.target.onerror = null; // Предотвращаем бесконечный цикл ошибок
-                                                e.target.style.display = 'none'; // Скрываем сломанное изображение
-                                                e.target.parentNode.querySelector('i').style.display = 'block'; // Показываем иконку
+                                                e.target.onerror = null;
+                                                e.target.style.display = 'none';
+                                                e.target.parentNode.querySelector('i').style.display = 'block';
                                             }}
                                         />
                                     ) : null}
-                                    {/* Иконка-заглушка, если нет изображения или оно не загрузилось */}
                                     <i className="fas fa-user-circle" style={{ display: user.link_img ? 'none' : 'block' }}></i>
                                 </div>
                                 <div className={styles.userInfo}>
                                     <h4 className={styles.userName}>{user.username}</h4>
                                     <p className={styles.userEmail}>{user.email}</p>
                                 </div>
+                                {/* Кнопка удаления остается, но теперь она не вызывает навигацию при клике */}
                                 <button
                                     className={styles.deleteButton}
-                                    onClick={() => handleDeleteUser(user.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Останавливаем всплытие события, чтобы не сработал клик по карточке
+                                        handleDeleteUser(user.id);
+                                    }}
                                 >
                                     <i className="fas fa-trash"></i>
                                 </button>
